@@ -3,6 +3,22 @@ from telethon import TelegramClient, events
 from telethon.sessions import StringSession
 import asyncio
 import random
+from flask import Flask
+from threading import Thread
+
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "adubot is alive"
+
+def run():
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
 
 api_id = 20900277
 api_hash = "6a3d761f9be590be4259404f34a1f81e"
@@ -62,5 +78,6 @@ async def main():
     print("Userbot running...")
     await client.run_until_disconnected()
 
+keep_alive()
 with client:
     client.loop.run_until_complete(main())
