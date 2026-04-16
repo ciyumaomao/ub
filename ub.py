@@ -57,7 +57,7 @@ async def auto_reply(event):
 💟𝗗𝗘𝗠𝗢 - 𝟭𝟬𝟬 𝗥𝗦💟''')
 
 @client.on(events.NewMessage(outgoing=True, pattern=r"\.b"))
-async def alive_msg(event):
+async def boost_msg(event):
     await event.edit("boost kardo ise t.me/swapping_wifegf?boost ❤️")
 
 @client.on(events.NewMessage(outgoing=True, pattern=r"\.alive"))
