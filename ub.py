@@ -62,6 +62,10 @@ async def handler(event):
 
 💟𝗗𝗘𝗠𝗢 - 𝟭𝟬𝟬 𝗥𝗦💟''')
 
+@client.on(events.NewMessage(outgoing=True, pattern=r"\.alive"))
+async def alive_msg(event):
+    await event.edit("I'm alive my queen.. ❤️")
+
 @client.on(events.NewMessage(outgoing=True, pattern=r"\.pay"))
 async def send_qr(event):
     await client.send_file(
