@@ -56,24 +56,59 @@ async def auto_reply(event):
 
 💟𝗗𝗘𝗠𝗢 - 𝟭𝟬𝟬 𝗥𝗦💟''')
 
-@client.on(events.NewMessage(outgoing=True, pattern=r"\.b"))
+@client.on(events.NewMessage(incoming=True))
+async def auto_delete_group_messages(event):
+    if event.is_group:
+        await asyncio.sleep(120)
+        try:
+            await event.delete()
+        except Exception as e:
+            print(f"Delete failed: {e}")
+
+@client.on(events.ChatAction())
+async def auto_delete_service(event):
+    if event.is_group:
+        await asyncio.sleep(120)
+        try:
+            await event.delete()
+        except Exception as e:
+            print(f"Service delete failed: {e}")
+
+@client.on(events.NewMessage(outgoing=True, pattern=r"\.boost"))
 async def boost_msg(event):
-    await event.edit("boost kardo ise t.me/swapping_wifegf?boost ❤️")
+    await event.edit("Boost this to get a free kiss. \nt.me/wifeswapping_live?boost ❤️")
 
 @client.on(events.NewMessage(outgoing=True, pattern=r"\.alive"))
 async def alive_msg(event):
     await event.edit("I'm alive my queen.. ❤️")
 
-@client.on(events.NewMessage(outgoing=True, pattern=r"\.alive"))
+@client.on(events.NewMessage(outgoing=True, pattern=r"\.kon"))
 async def love_msg(event):
-    await event.edit("❤️")
+    await event.edit("mai to simple si normal si ladki hu 🥺")
+
+@client.on(events.NewMessage(outgoing=True, pattern=r"\.love"))
+async def love_animation(event):
+    frames = [
+        "🤍",
+        "💛",
+        "🧡",
+        "❤️",
+        "💖",
+        "💞",
+        "💕",
+        "💘 I Love You 💘"
+    ]
+
+    for frame in frames:
+        await event.edit(frame)
+        await asyncio.sleep(0.5)
 
 @client.on(events.NewMessage(outgoing=True, pattern=r"\.pay"))
 async def send_qr(event):
     await client.send_file(
         event.chat_id,
         "qr.jpg",
-        caption="Scan and pay"
+        caption="scan and pay karo"
     )
     await event.delete()
 
