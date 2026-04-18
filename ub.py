@@ -6,6 +6,7 @@ import random
 from flask import Flask
 from threading import Thread
 
+
 app = Flask('')
 
 @app.route('/')
@@ -29,10 +30,10 @@ client = TelegramClient(StringSession(session), api_id, api_hash)
 @client.on(events.NewMessage(incoming=True))
 async def auto_reply(event):
     if event.is_private and not event.out:
-        if event.raw_text.lower() in ["hi", "hello"]:
+        if event.raw_text.lower() in ["hi", "hello", "hii", "hey", "hyy", "hy"]:
             async with client.action(event.chat_id, 'typing'):
                 await asyncio.sleep(random.randint(2,4))
-            await event.reply('''🐣🦋 𝗡𝗔𝗩𝗬𝗔 𝗔𝗩𝗔𝗜𝗟𝗔𝗕𝗟𝗘 🐣🦋
+            await event.reply('''🐣🦋 𝗦𝗘𝗥𝗩𝗜𝗖𝗘 𝗔𝗩𝗔𝗜𝗟𝗔𝗕𝗟𝗘 🐣🦋
 
        🍒  𝗩𝗢𝗜𝗖𝗘 𝗖𝗔𝗟𝗟  🍒
 
@@ -76,7 +77,11 @@ async def auto_delete_service(event):
 
 @client.on(events.NewMessage(outgoing=True, pattern=r"\.boost"))
 async def boost_msg(event):
-    await event.edit("Boost this to get a free kiss. \nt.me/wifeswapping_live?boost ❤️")
+    await event.edit("𝘽𝙊𝙊𝙎𝙏 𝙏𝙃𝙄𝙎 𝙂𝙍𝙊𝙐𝙋 💋 \nt.me/wife_swapping_gf?boost ❤️")
+
+@client.on(events.NewMessage(outgoing=True, pattern=r"\.boostshiv"))
+async def boost_msgg(event):
+    await event.edit("𝘽𝙊𝙊𝙎𝙏 𝙏𝙃𝙄𝙎 𝘾𝙃𝘼𝙉𝙉𝙀𝙇 💋 \nt.me/thnxshiv?boost? ❤️")
 
 @client.on(events.NewMessage(outgoing=True, pattern=r"\.alive"))
 async def alive_msg(event):
@@ -102,6 +107,129 @@ async def love_animation(event):
     for frame in frames:
         await event.edit(frame)
         await asyncio.sleep(0.5)
+
+@client.on(events.NewMessage(pattern=r"\.hack"))
+async def hack_animation(event):
+    steps = [
+        "🟩 Initializing hack...",
+        "🟩 Connecting to target...",
+        "🟩 Bypassing firewall...",
+        "🟩 Injecting payload...",
+        "🟩 Accessing database...",
+        "🟩 Downloading files...",
+        "🟥 Trace detected...",
+        "🟩 Trace bypassed...",
+        "🟩 Access Granted!",
+        "💀 Target successfully hacked!"
+    ]
+
+    msg = await event.respond("Starting...")
+    
+    for step in steps:
+        await asyncio.sleep(1.2)
+        await msg.edit(step)
+
+@client.on(events.NewMessage(pattern=r"\.bar"))
+async def progress_bar(event):
+    msg = await event.respond("Starting...")
+
+    frames = [
+        "[□□□□□□□□□□] 10%",
+        "[■■□□□□□□□□] 20%",
+        "[■■■□□□□□□□] 30%",
+        "[■■■■□□□□□□] 40%",
+        "[■■■■■□□□□□] 50%",
+        "[■■■■■■□□□□] 60%",
+        "[■■■■■■■□□□] 70%",
+        "[■■■■■■■■□□] 80%",
+        "[■■■■■■■■■□] 90%",
+        "[■■■■■■■■■■] 100%"
+    ]
+
+    for frame in frames:
+        await asyncio.sleep(0.5)
+        await msg.edit(frame)
+
+    await msg.edit("✅ Completed!")
+
+@client.on(events.NewMessage(pattern=r"\.type (.+)"))
+async def type_text(event):
+    text = event.pattern_match.group(1)
+    msg = await event.respond("")
+
+    current = ""
+    for char in text:
+        current += char
+        await asyncio.sleep(0.1)
+        await msg.edit(current)
+
+@client.on(events.NewMessage(pattern=r"\.lovemeter"))
+async def lovemeter(event):
+    msg = await event.respond("Calculating love...")
+
+    frames = [
+        "❤️ [■□□□□□□□□□] 10%",
+        "❤️ [■■□□□□□□□□] 20%",
+        "❤️ [■■■□□□□□□□] 30%",
+        "❤️ [■■■■□□□□□□] 40%",
+        "❤️ [■■■■■□□□□□] 50%",
+        "❤️ [■■■■■■□□□□] 60%",
+        "❤️ [■■■■■■■□□□] 70%",
+        "❤️ [■■■■■■■■□□] 80%",
+        "❤️ [■■■■■■■■■□] 90%",
+        "❤️ [■■■■■■■■■■] 100%",
+        "💘 Love Confirmed!"
+    ]
+
+    for frame in frames:
+        await asyncio.sleep(0.4)
+        await msg.edit(frame)
+
+@client.on(events.NewMessage(pattern=r"\.kiss"))
+async def kiss(event):
+    msg = await event.respond("😘")
+
+    frames = [
+        "😘",
+        "😘💕",
+        "😘💕💕",
+        "😘💕💕💕",
+        "💋 Sending Kiss..."
+    ]
+
+    for frame in frames:
+        await asyncio.sleep(0.6)
+        await msg.edit(frame)
+
+@client.on(events.NewMessage(pattern=r"\.spam (\d+) (.+)"))
+async def spam(event):
+    count = int(event.pattern_match.group(1))
+    text = event.pattern_match.group(2)
+
+    await event.delete()  # removes your command message
+
+    for _ in range(count):
+        await event.respond(text)
+        await asyncio.sleep(0.3)
+
+@client.on(events.NewMessage(pattern=r"\.hug"))
+async def hug(event):
+    reply = await event.get_reply_message()
+    if not reply:
+        return await event.respond("Reply to someone to hug them 🤗")
+
+    msg = await event.respond("Sending hug...")
+
+    frames = [
+        "🤗",
+        "🤗💕",
+        "🫂💖",
+        "💖 Hug sent!"
+    ]
+
+    for frame in frames:
+        await asyncio.sleep(0.7)
+        await msg.edit(frame)
 
 @client.on(events.NewMessage(outgoing=True, pattern=r"\.pay"))
 async def send_qr(event):
