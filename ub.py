@@ -1,11 +1,14 @@
 import os
-from telethon import TelegramClient, events
-from telethon.sessions import StringSession
+import time
 import asyncio
 import random
-from flask import Flask
+import logging
 from threading import Thread
+from flask import Flask
+from telethon import TelegramClient, events
+from telethon.sessions import StringSession
 
+# ================== KEEP ALIVE ================== #
 
 app = Flask('')
 
@@ -21,6 +24,15 @@ def keep_alive():
     t = Thread(target=run)
     t.start()
 
+# ================== LOGGING ================== #
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s] %(levelname)s - %(message)s'
+)
+
+# ================== TELEGRAM CONFIG ================== #
+
 api_id = 32135350
 api_hash = "7c9832d6ef116e3d75ac843dbc1bbbad"
 session = "1BVtsOIQBu0e_nOgzSD9kxe8NDmuteul2liYvgPlPu3HMJl9ux0Izlg5lceEu631PyIZogd9BI13IwEXGbZ9kyMm82cl7C-2zogtj9fx1ZMIHnjXK02nobKVhYJGQWK429ThrzMqgENCOOfMyrTsGimHE6Siuhxw0RikyoN69sX3QshcIXjdVcHKnaeQRgNqjoT40KzVwa1IhJEQUbmfciu7zWN4eLHT6jQY3xwDW9-XveqagucxBEJyYialU5o5MbXREKBRgzRYrYleC9uYl1jmpq_rpsIUi6gH4ftHrpXa_muicmqXtTt0BXWyoL2yth_F0UQm6yXTIT3w2vYGfJDDr-Uv9qmQ="
@@ -28,10 +40,9 @@ session = "1BVtsOIQBu0e_nOgzSD9kxe8NDmuteul2liYvgPlPu3HMJl9ux0Izlg5lceEu631PyIZo
 client = TelegramClient(StringSession(session), api_id, api_hash)
 
 TARGET_GROUP_ID = -1003623091628
-replied_users = set()
 start_time = time.time()
 
-# ---------------- 24x7 TYPING PRANK ---------------- #
+# ================== AUTO TYPING ================== #
 
 async def fake_typing():
     while True:
@@ -39,215 +50,131 @@ async def fake_typing():
             async with client.action(TARGET_GROUP_ID, 'typing'):
                 await asyncio.sleep(random.randint(6, 12))
         except Exception as e:
-            print("Typing Error:", e)
-            await asyncio.sleep(15)
+            logging.error(f"Typing error: {e}")
+            await asyncio.sleep(10)
+
+# ================== PRIVATE AUTO REPLY ================== #
+
+GREETING_TEXT = '''🐣🦋 𝗦𝗘𝗥𝗩𝗜𝗖𝗘 𝗔𝗩𝗔𝗜𝗟𝗔𝗕𝗟𝗘 🐣🦋
+
+🍒 𝗩𝗢𝗜𝗖𝗘 𝗖𝗔𝗟𝗟
+5 MIN - 200 RS
+10 MIN - 350 RS
+
+🎀 𝗩𝗜𝗗𝗘𝗢 𝗖𝗔𝗟𝗟
+5 MIN - 500 RS
+10 MIN - 800 RS
+
+🌟 𝗦𝗘𝗫 𝗖𝗛𝗔𝗧
+5 MIN - 200 RS
+10 MIN - 350 RS
+
+💟 DEMO - 100 RS'''
 
 @client.on(events.NewMessage(incoming=True))
-async def auto_reply(event):
-    if event.is_private and not event.out:
-        if event.raw_text.lower() in ["hi", "hello", "hii", "hey", "hyy", "hy"]:
-            async with client.action(event.chat_id, 'typing'):
-                await asyncio.sleep(random.randint(2,4))
-            await event.reply('''🐣🦋 𝗦𝗘𝗥𝗩𝗜𝗖𝗘 𝗔𝗩𝗔𝗜𝗟𝗔𝗕𝗟𝗘 🐣🦋
+async def private_auto_reply(event):
+    try:
+        if event.is_private and not event.out:
+            text = event.raw_text.lower()
+            if text in ["hi", "hello", "hey", "hii", "hy", "hyy"]:
+                async with client.action(event.chat_id, 'typing'):
+                    await asyncio.sleep(random.randint(2, 4))
+                await event.reply(GREETING_TEXT)
+    except Exception as e:
+        logging.error(f"Auto reply error: {e}")
 
-       🍒  𝗩𝗢𝗜𝗖𝗘 𝗖𝗔𝗟𝗟  🍒
-
-🍒𝟱 𝗠𝗜𝗡𝗨𝗧𝗘𝗦 - 𝟮𝟬𝟬 𝗥𝗦 💦
-🍒𝟭𝟬 𝗠𝗜𝗡𝗨𝗧𝗘𝗦 - 𝟯𝟱𝟬 𝗥𝗦 💦
-
-       🎀 𝗩𝗜𝗗𝗘𝗢 𝗖𝗔𝗟𝗟 💘
-
-🍒𝟱 𝗠𝗜𝗡𝗨𝗧𝗘𝗦 - 𝟱𝟬𝟬 𝗥𝗦  💦
-🍒𝟭𝟬 𝗠𝗜𝗡𝗨𝗧𝗘𝗦 - 𝟴𝟬𝟬 𝗥𝗦 💦
-
-       🌟 𝗦𝗘𝗫 𝗖𝗛𝗔𝗧 👄
-
-🍒𝟱 𝗠𝗜𝗡𝗨𝗧𝗘𝗦 - 𝟮𝟬𝟬 𝗥𝗦 💦
-🍒𝟭𝟬 𝗠𝗜𝗡𝗨𝗧𝗘𝗦 - 𝟯𝟱𝟬 𝗥𝗦 💦
-
-       🎀 𝗦𝗣𝗘𝗖𝗜𝗔𝗟 𝗦𝗛𝗢𝗪 💘
-
-🍒 𝗦𝗔𝗥𝗘𝗘 𝗦𝗛𝗢𝗪 - 𝟭𝟮𝟬𝟬 𝗥𝗦 💦
-🍒 𝗦𝗤𝗨𝗜𝗥𝗧 𝗦𝗛𝗢𝗪 - 𝟭𝟭𝟬𝟬 𝗥𝗦 💦
-
-💟𝗗𝗘𝗠𝗢 - 𝟭𝟬𝟬 𝗥𝗦💟''')
+# ================== AUTO DELETE ================== #
 
 @client.on(events.NewMessage(incoming=True))
-async def auto_delete_group_messages(event):
+async def auto_delete_group(event):
     if event.is_group:
         await asyncio.sleep(120)
         try:
             await event.delete()
-        except Exception as e:
-            print(f"Delete failed: {e}")
+        except:
+            pass
 
-@client.on(events.ChatAction())
-async def auto_delete_service(event):
-    if event.is_group:
-        await asyncio.sleep(120)
-        try:
-            await event.delete()
-        except Exception as e:
-            print(f"Service delete failed: {e}")
-
-@client.on(events.NewMessage(outgoing=True, pattern=r"\.boost"))
-async def boost_msg(event):
-    await event.edit("𝘽𝙊𝙊𝙎𝙏 𝙏𝙃𝙄𝙎 𝙂𝙍𝙊𝙐𝙋 💋 \nt.me/wife_swapping_gf?boost ❤️")
-
-@client.on(events.NewMessage(outgoing=True, pattern=r"\.boostshiv"))
-async def boost_msgg(event):
-    await event.edit("𝘽𝙊𝙊𝙎𝙏 𝙏𝙃𝙄𝙎 𝘾𝙃𝘼𝙉𝙉𝙀𝙇 💋 \nt.me/thnxshiv?boost? ❤️")
+# ================== BASIC COMMANDS ================== #
 
 @client.on(events.NewMessage(outgoing=True, pattern=r"\.alive"))
-async def alive_msg(event):
+async def alive(event):
     await event.edit("I'm alive my queen.. ❤️")
 
-@client.on(events.NewMessage(outgoing=True, pattern=r"\.kon"))
-async def love_msg(event):
-    await event.edit("mai to simple si normal si ladki hu 🥺")
+@client.on(events.NewMessage(outgoing=True, pattern=r"\.ping"))
+async def ping(event):
+    start = time.time()
+    msg = await event.edit("Pinging...")
+    end = time.time()
+    ms = round((end - start) * 1000, 2)
+    await msg.edit(f"🏓 Pong: {ms} ms")
 
-@client.on(events.NewMessage(outgoing=True, pattern=r"\.love"))
-async def love_animation(event):
-    frames = [
-        "🤍",
-        "💛",
-        "🧡",
-        "❤️",
-        "💖",
-        "💞",
-        "💕",
-        "💘 I Love You 💘"
-    ]
+@client.on(events.NewMessage(outgoing=True, pattern=r"\.uptime"))
+async def uptime(event):
+    seconds = int(time.time() - start_time)
+    hrs = seconds // 3600
+    mins = (seconds % 3600) // 60
+    secs = seconds % 60
+    await event.edit(f"⏳ Uptime: {hrs}h {mins}m {secs}s")
 
-    for frame in frames:
-        await event.edit(frame)
+@client.on(events.NewMessage(outgoing=True, pattern=r"\.boost"))
+async def boost(event):
+    await event.edit("𝘽𝙊𝙊𝙎𝙏 𝙏𝙃𝙄𝙎 𝙂𝙍𝙊𝙐𝙋 💋\nt.me/wife_swapping_gf?boost ❤️")
+
+@client.on(events.NewMessage(outgoing=True, pattern=r"\.boostshiv"))
+async def boostshiv(event):
+    await event.edit("𝘽𝙊𝙊𝙎𝙏 𝙏𝙃𝙄𝙎 𝘾𝙃𝘼𝙉𝙉𝙀𝙇 💋\nt.me/thnxshiv?boost ❤️")
+
+# ================== FUN COMMANDS ================== #
+
+@client.on(events.NewMessage(pattern=r"\.love"))
+async def love(event):
+    frames = ["🤍", "💛", "🧡", "❤️", "💖", "💞", "💕", "💘 I Love You 💘"]
+    for f in frames:
+        await event.edit(f)
         await asyncio.sleep(0.5)
 
 @client.on(events.NewMessage(pattern=r"\.hack"))
-async def hack_animation(event):
+async def hack(event):
     steps = [
-        "🟩 Initializing hack...",
-        "🟩 Connecting to target...",
-        "🟩 Bypassing firewall...",
-        "🟩 Injecting payload...",
-        "🟩 Accessing database...",
-        "🟩 Downloading files...",
-        "🟥 Trace detected...",
-        "🟩 Trace bypassed...",
-        "🟩 Access Granted!",
-        "💀 Target successfully hacked!"
+        "Initializing hack...",
+        "Connecting...",
+        "Bypassing firewall...",
+        "Injecting payload...",
+        "Access Granted!",
+        "💀 Target hacked!"
     ]
-
-    msg = await event.respond("Starting...")
-    
-    for step in steps:
-        await asyncio.sleep(1.2)
-        await msg.edit(step)
-
-@client.on(events.NewMessage(pattern=r"\.bar"))
-async def progress_bar(event):
-    msg = await event.respond("Starting...")
-
-    frames = [
-        "[□□□□□□□□□□] 10%",
-        "[■■□□□□□□□□] 20%",
-        "[■■■□□□□□□□] 30%",
-        "[■■■■□□□□□□] 40%",
-        "[■■■■■□□□□□] 50%",
-        "[■■■■■■□□□□] 60%",
-        "[■■■■■■■□□□] 70%",
-        "[■■■■■■■■□□] 80%",
-        "[■■■■■■■■■□] 90%",
-        "[■■■■■■■■■■] 100%"
-    ]
-
-    for frame in frames:
-        await asyncio.sleep(0.5)
-        await msg.edit(frame)
-
-    await msg.edit("✅ Completed!")
+    for s in steps:
+        await event.edit(s)
+        await asyncio.sleep(1)
 
 @client.on(events.NewMessage(pattern=r"\.type (.+)"))
-async def type_text(event):
+async def type_cmd(event):
     text = event.pattern_match.group(1)
-    msg = await event.respond("")
-
+    await event.edit("")
     current = ""
     for char in text:
         current += char
-        await asyncio.sleep(0.1)
-        await msg.edit(current)
-
-@client.on(events.NewMessage(pattern=r"\.lovemeter"))
-async def lovemeter(event):
-    msg = await event.respond("Calculating love...")
-
-    frames = [
-        "❤️ [■□□□□□□□□□] 10%",
-        "❤️ [■■□□□□□□□□] 20%",
-        "❤️ [■■■□□□□□□□] 30%",
-        "❤️ [■■■■□□□□□□] 40%",
-        "❤️ [■■■■■□□□□□] 50%",
-        "❤️ [■■■■■■□□□□] 60%",
-        "❤️ [■■■■■■■□□□] 70%",
-        "❤️ [■■■■■■■■□□] 80%",
-        "❤️ [■■■■■■■■■□] 90%",
-        "❤️ [■■■■■■■■■■] 100%",
-        "💘 Love Confirmed!"
-    ]
-
-    for frame in frames:
-        await asyncio.sleep(0.4)
-        await msg.edit(frame)
-
-@client.on(events.NewMessage(pattern=r"\.kiss"))
-async def kiss(event):
-    msg = await event.respond("😘")
-
-    frames = [
-        "😘",
-        "😘💕",
-        "😘💕💕",
-        "😘💕💕💕",
-        "💋 Sending Kiss..."
-    ]
-
-    for frame in frames:
-        await asyncio.sleep(0.6)
-        await msg.edit(frame)
+        await event.edit(current)
+        await asyncio.sleep(0.08)
 
 @client.on(events.NewMessage(pattern=r"\.spam (\d+) (.+)"))
 async def spam(event):
     count = int(event.pattern_match.group(1))
     text = event.pattern_match.group(2)
 
-    await event.delete()  # removes your command message
+    if count > 20:
+        return await event.edit("Spam limit is 20.")
+
+    await event.delete()
 
     for _ in range(count):
         await event.respond(text)
         await asyncio.sleep(0.3)
 
-@client.on(events.NewMessage(pattern=r"\.hug"))
-async def hug(event):
-    reply = await event.get_reply_message()
-    if not reply:
-        return await event.respond("Reply to someone to hug them 🤗")
-
-    msg = await event.respond("Sending hug...")
-
-    frames = [
-        "🤗",
-        "🤗💕",
-        "🫂💖",
-        "💖 Hug sent!"
-    ]
-
-    for frame in frames:
-        await asyncio.sleep(0.7)
-        await msg.edit(frame)
+# ================== QR PAYMENT ================== #
 
 @client.on(events.NewMessage(outgoing=True, pattern=r"\.pay"))
-async def send_qr(event):
+async def pay(event):
     await client.send_file(
         event.chat_id,
         "qr.jpg",
@@ -255,11 +182,35 @@ async def send_qr(event):
     )
     await event.delete()
 
+# ================== HELP MENU ================== #
+
+@client.on(events.NewMessage(outgoing=True, pattern=r"\.help"))
+async def help_menu(event):
+    await event.edit("""
+⚡ USERBOT COMMANDS ⚡
+
+.alive
+.ping
+.uptime
+.boost
+.boostshiv
+.love
+.hack
+.type text
+.spam count text
+.pay
+.help
+""")
+
+# ================== MAIN ================== #
+
 async def main():
     await client.start()
-    print("Userbot running...")
+    logging.info("Userbot running...")
+    client.loop.create_task(fake_typing())
     await client.run_until_disconnected()
 
 keep_alive()
+
 with client:
     client.loop.run_until_complete(main())
