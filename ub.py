@@ -27,6 +27,21 @@ session = "1BVtsOIQBu0e_nOgzSD9kxe8NDmuteul2liYvgPlPu3HMJl9ux0Izlg5lceEu631PyIZo
 
 client = TelegramClient(StringSession(session), api_id, api_hash)
 
+TARGET_GROUP_ID = -1003623091628
+replied_users = set()
+start_time = time.time()
+
+# ---------------- 24x7 TYPING PRANK ---------------- #
+
+async def fake_typing():
+    while True:
+        try:
+            async with client.action(TARGET_GROUP_ID, 'typing'):
+                await asyncio.sleep(random.randint(6, 12))
+        except Exception as e:
+            print("Typing Error:", e)
+            await asyncio.sleep(15)
+
 @client.on(events.NewMessage(incoming=True))
 async def auto_reply(event):
     if event.is_private and not event.out:
