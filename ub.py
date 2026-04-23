@@ -60,10 +60,10 @@ async def send_quotes():
             if dialog.is_group:
                 try:
                     await client.send_message(dialog.id, random.choice(quotes))
-                    await asyncio.sleep(7)
+                    await asyncio.sleep(60)
                 except Exception:
                     pass
-        await asyncio.sleep(300)
+        await asyncio.sleep(600)
 
 # ---------------- PRIVATE AUTO REPLY ---------------- #
 
@@ -80,7 +80,7 @@ async def private_auto_reply(event):
             await asyncio.sleep(2)
 
             await event.respond(
-                f"🌸 NAVYA AVAILABLE 🌸\n\n"
+                f"Hi dear ❤️ Thank you for messaging me.\n\n"
                 f"Please join our group:\n{GROUP_LINK}\n\n"
                 f"After joining, message me again 💋"
             )
