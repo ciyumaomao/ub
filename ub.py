@@ -40,7 +40,7 @@ GROUP_LINK = "@WIFE_SWAPPING_GF"
 replied_users = set()
 start_time = time.time()
 
-quotes = ["Hi", "Hii", "Addd Mee", "Heloo", "Nice"]
+quotes = ["Hi", "Hii", "Addd Mee", "Heloo", "Nice", "Coming?"]
 
 # ---------------- BACKGROUND TASKS ---------------- #
 
@@ -80,7 +80,7 @@ async def private_auto_reply(event):
             await asyncio.sleep(2)
 
             await event.respond(
-                f"Hi dear ❤️ Thank you for messaging me.\n\n"
+                f"Hi dear ❤️\nThank you for messaging me.\n\n"
                 f"Please join our group:\n{GROUP_LINK}\n\n"
                 f"After joining, message me again 💋"
             )
@@ -164,23 +164,11 @@ async def spam(event):
     for _ in range(count):
         await client.send_message(event.chat_id, text)
 
-@client.on(events.NewMessage(outgoing=True, pattern=r"\.rl"))
+@client.on(events.NewMessage(outgoing=True, pattern=r"\.dm"))
 async def price_list(event):
     text = """
-🌸 NAVYA AVAILABLE 🌸
-💬 SEX CHAT
-• 10 min → ₹350
-• 20 min → ₹740
-
-📞 VOICE CALL
-• 5 min → ₹220
-• 10 min → ₹450
-
-🎥 VIDEO CALL
-• 5 min → ₹500
-• 10 min → ₹990
-
-Send payment screenshot after payment.
+🌸 VC SERVICE - @GF_NAVYA
+🌸 TG/WA ID - @niximia
 """
     await event.edit(text)
 
